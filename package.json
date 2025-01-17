@@ -3,7 +3,7 @@
   "displayName": "Carvel YTT Language Support",
   "description": "Language support for Carvel YTT (YAML Templating Tool)",
   "version": "0.0.1",
-  "publisher": "ytt-extension",
+  "publisher": "GorkemOzlu",
   "author": {
     "name": "Gorkem Ozlu"
   },
