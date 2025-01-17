@@ -1,0 +1,65 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:yaml", "yaml")
+
+#@ def test_values():
+data:
+  size: "small"
+  groups:
+    - admin
+    - user
+#@ end
+
+#@ if data.values.enabled:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-config
+data:
+  key1: value1
+#@ end
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: test-binding
+subjects:
+#@ for/end group in data.values.groups:
+- kind: Group
+  name: #@ "sso:{}".format(group)
+  apiGroup: rbac.authorization.k8s.io
+#@ for user in data.values.users:
+- kind: User
+  name: #@ user
+  apiGroup: rbac.authorization.k8s.io
+#@ end
+
+---
+#@ if data.values.feature_enabled:
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-service
+spec:
+  ports:
+  #@ for/end port in data.values.ports:
+  - port: #@ port
+    protocol: TCP
+#@ end
+
+---
+#@ if len(namespace[i].readOnlyGroups) > 0:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ldap-readonly-rolebinding
+  namespace: #@ namespace[i].name
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: Group
+  name: #@ "sso:{}@customer.local".format(ssoval)
+  apiGroup: rbac.authorization.k8s.io
+#@ end

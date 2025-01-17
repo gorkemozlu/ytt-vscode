@@ -1,0 +1,65 @@
+{
+  "name": "ytt-language-support",
+  "displayName": "Carvel YTT Language Support",
+  "description": "Language support for Carvel YTT (YAML Templating Tool)",
+  "version": "0.0.1",
+  "publisher": "ytt-extension",
+  "author": {
+    "name": "Gorkem Ozlu"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gorkemozlu/ytt-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/gorkemozlu/ytt-vscode/issues"
+  },
+  "homepage": "https://github.com/gorkemozlu/ytt-vscode#readme",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Linters"
+  ],
+  "keywords": [
+    "ytt",
+    "carvel",
+    "yaml",
+    "kubernetes",
+    "k8s"
+  ],
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#C80000",
+    "theme": "dark"
+  },
+  "contributes": {
+    "languages": [{
+      "id": "ytt",
+      "aliases": ["Carvel YTT", "ytt"],
+      "extensions": [".yaml", ".yml"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "ytt",
+      "scopeName": "source.ytt",
+      "path": "./syntaxes/ytt.tmLanguage.json"
+    }]
+  },
+  "activationEvents": [
+    "onLanguage:ytt",
+    "onLanguage:yaml"
+  ],
+  "main": "./extension.js",
+  "scripts": {
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.96.0",
+    "vsce": "^2.15.0"
+  }
+}

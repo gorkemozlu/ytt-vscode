@@ -1,0 +1,110 @@
+{
+    "scopeName": "source.ytt",
+    "patterns": [
+        {
+            "include": "#ytt-directives"
+        },
+        {
+            "include": "source.yaml"
+        }
+    ],
+    "repository": {
+        "ytt-directives": {
+            "patterns": [
+                {
+                    "name": "keyword.control.ytt",
+                    "match": "^\\s*#@\\s*(if|for|end|def|return|load|yaml)\\b"
+                },
+                {
+                    "name": "meta.function.ytt",
+                    "begin": "^\\s*(#@)\\s*(def)\\s*(\\w+)",
+                    "beginCaptures": {
+                        "1": { "name": "punctuation.definition.directive.ytt" },
+                        "2": { "name": "keyword.control.def.ytt" },
+                        "3": { "name": "entity.name.function.ytt" }
+                    },
+                    "end": "^\\s*(#@)\\s*(end)\\b",
+                    "endCaptures": {
+                        "1": { "name": "punctuation.definition.directive.ytt" },
+                        "2": { "name": "keyword.control.end.ytt" }
+                    },
+                    "patterns": [
+                        { "include": "#ytt-expressions" },
+                        { "include": "source.yaml" }
+                    ]
+                },
+                {
+                    "name": "meta.control.if.ytt",
+                    "begin": "^\\s*(#@)\\s*(if)\\b",
+                    "beginCaptures": {
+                        "1": { "name": "punctuation.definition.directive.ytt" },
+                        "2": { "name": "keyword.control.if.ytt" }
+                    },
+                    "end": "^\\s*(#@)\\s*(end)\\b",
+                    "endCaptures": {
+                        "1": { "name": "punctuation.definition.directive.ytt" },
+                        "2": { "name": "keyword.control.end.ytt" }
+                    },
+                    "patterns": [
+                        { "include": "#ytt-expressions" },
+                        { "include": "source.yaml" }
+                    ]
+                },
+                {
+                    "name": "meta.control.for.ytt",
+                    "begin": "^\\s*(#@)\\s*(for)\\b",
+                    "beginCaptures": {
+                        "1": { "name": "punctuation.definition.directive.ytt" },
+                        "2": { "name": "keyword.control.for.ytt" }
+                    },
+                    "end": "^\\s*(#@)\\s*(end)\\b",
+                    "endCaptures": {
+                        "1": { "name": "punctuation.definition.directive.ytt" },
+                        "2": { "name": "keyword.control.end.ytt" }
+                    },
+                    "patterns": [
+                        { "include": "#ytt-expressions" },
+                        { "include": "source.yaml" }
+                    ]
+                },
+                {
+                    "name": "meta.annotation.ytt",
+                    "match": "^\\s*(#@yaml/[\\w-]+)",
+                    "captures": {
+                        "1": { "name": "storage.type.annotation.ytt" }
+                    }
+                }
+            ]
+        },
+        "ytt-expressions": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.ytt",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.ytt",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.single.ytt",
+                    "begin": "'",
+                    "end": "'",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.ytt",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "name": "constant.numeric.ytt",
+                    "match": "\\b\\d+(\\.\\d+)?\\b"
+                }
+            ]
+        }
+    }
+}
