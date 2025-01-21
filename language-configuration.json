@@ -29,12 +29,12 @@
     ],
     "folding": {
         "markers": {
-            "start": "^\\s*#@\\s*(if|for|def)\\b",
-            "end": "^\\s*#@\\s*end\\b"
+            "start": "^\\s*#@\\s*(if|elif|for|def)\\b",
+            "end": "^\\s*#@\\s*(elif|else|end)\\b"
         }
     },
     "indentationRules": {
-        "increaseIndentPattern": "^\\s*#@\\s*(if|for|def)\\b|^[^#].*:\\s*$",
-        "decreaseIndentPattern": "^\\s*#@\\s*end\\b|^\\s*-\\s+\\w+"
+        "increaseIndentPattern": "^\\s*#@\\s*(if|elif|for|def)\\b|^[^#].*:\\s*$",
+        "decreaseIndentPattern": "^\\s*#@\\s*(elif|else|end)\\b|^\\s*-\\s+\\w+"
     }
 }

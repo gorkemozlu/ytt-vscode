@@ -66,15 +66,37 @@ function activate(context) {
                         ));
                     }
                 }
-                // Handle if/for/def blocks
-                else if (line.match(/^#@\s*(if|for|def)\b/) && !line.match(/^#@\s*for\/end\b/)) {
-                    const endLine = findMatchingEnd(i, indent);
-                    if (endLine !== null) {
-                        foldingRanges.push(new vscode.FoldingRange(
-                            i,
-                            endLine,
-                            vscode.FoldingRangeKind.Region
-                        ));
+                // Handle if/for/def blocks and elif conditions
+                else if (line.match(/^#@\s*(if|for|def|elif)\b/) && !line.match(/^#@\s*for\/end\b/)) {
+                    // For elif, we want to fold until the next elif/else/end
+                    if (line.match(/^#@\s*elif\b/)) {
+                        let endLine = i;
+                        for (let j = i + 1; j < lines.length; j++) {
+                            const nextLine = lines[j].trim();
+                            if (nextLine.match(/^#@\s*(elif|else|end)\b/)) {
+                                endLine = j - 1;
+                                break;
+                            }
+                            if (j === lines.length - 1) {
+                                endLine = j;
+                            }
+                        }
+                        if (endLine > i) {
+                            foldingRanges.push(new vscode.FoldingRange(
+                                i,
+                                endLine,
+                                vscode.FoldingRangeKind.Region
+                            ));
+                        }
+                    } else {
+                        const endLine = findMatchingEnd(i, indent);
+                        if (endLine !== null) {
+                            foldingRanges.push(new vscode.FoldingRange(
+                                i,
+                                endLine,
+                                vscode.FoldingRangeKind.Region
+                            ));
+                        }
                     }
                 }
                 // Handle for/end with list item
