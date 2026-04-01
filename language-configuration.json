@@ -1,11 +1,8 @@
 {
     "comments": {
-        "lineComment": "#"
+        "lineComment": "#!"
     },
     "brackets": [
-        ["#@ if", "#@ end"],
-        ["#@ for", "#@ end"],
-        ["#@ def", "#@ end"],
         ["{", "}"],
         ["[", "]"],
         ["(", ")"]
@@ -18,9 +15,6 @@
         { "open": "'", "close": "'" }
     ],
     "surroundingPairs": [
-        ["#@ if", "#@ end"],
-        ["#@ for", "#@ end"],
-        ["#@ def", "#@ end"],
         ["{", "}"],
         ["[", "]"],
         ["(", ")"],
@@ -29,12 +23,12 @@
     ],
     "folding": {
         "markers": {
-            "start": "^\\s*#@\\s*(if|elif|for|def)\\b",
+            "start": "^\\s*#@\\s*(if|elif|else|for|def)\\b",
             "end": "^\\s*#@\\s*(elif|else|end)\\b"
         }
     },
     "indentationRules": {
-        "increaseIndentPattern": "^\\s*#@\\s*(if|elif|for|def)\\b|^[^#].*:\\s*$",
-        "decreaseIndentPattern": "^\\s*#@\\s*(elif|else|end)\\b|^\\s*-\\s+\\w+"
+        "increaseIndentPattern": "^\\s*#@\\s*(if|for|def)\\b|^(?!\\s*#)(?:\\s*-\\s+)?[^\\s#][^#]*:\\s*$",
+        "decreaseIndentPattern": "^\\s*#@\\s*(elif|else|end)\\b"
     }
 }

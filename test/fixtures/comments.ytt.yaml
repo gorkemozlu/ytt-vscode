@@ -1,0 +1,19 @@
+#! preferred ytt comment
+# legacy yaml comment
+#@ if data.values.enabled:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo
+#@ elif data.values.fallback:
+#! branch comment
+metadata:
+  name: fallback
+#@ else:
+data: {}
+#@ end
+
+subjects:
+#@ for/end group in data.values.groups:
+- kind: Group
+  name: #@ group

@@ -1,0 +1,80 @@
+{
+  "YTT if/end": {
+    "prefix": "ytt-if",
+    "body": [
+      "#@ if ${1:condition}:",
+      "${2:key}: ${3:value}",
+      "#@ end"
+    ],
+    "description": "Insert a YTT if/end block"
+  },
+  "YTT if/else/end": {
+    "prefix": "ytt-if-else",
+    "body": [
+      "#@ if ${1:condition}:",
+      "${2:key}: ${3:trueValue}",
+      "#@ else:",
+      "${2:key}: ${4:falseValue}",
+      "#@ end"
+    ],
+    "description": "Insert a YTT if/else/end block"
+  },
+  "YTT for/end": {
+    "prefix": "ytt-for",
+    "body": [
+      "#@ for ${1:item} in ${2:items}:",
+      "${3:key}: #@ ${1:item}",
+      "#@ end"
+    ],
+    "description": "Insert a YTT for/end block"
+  },
+  "YTT def/end": {
+    "prefix": "ytt-def",
+    "body": [
+      "#@ def ${1:name}(${2:args}):",
+      "${3:key}: ${4:value}",
+      "#@ end"
+    ],
+    "description": "Insert a YTT function definition"
+  },
+  "YTT load": {
+    "prefix": "ytt-load",
+    "body": [
+      "#@ load(\"${1:@ytt:data}\", \"${2:data}\")"
+    ],
+    "description": "Insert a YTT load directive"
+  },
+  "YTT overlay match": {
+    "prefix": "ytt-overlay-match",
+    "body": [
+      "#@overlay/match by=overlay.subset({\"${1:key}\": \"${2:value}\"})",
+      "${1:key}: ${2:value}"
+    ],
+    "description": "Insert a YTT overlay match annotation"
+  },
+  "YTT data values": {
+    "prefix": "ytt-data-values",
+    "body": [
+      "#@data/values",
+      "---",
+      "${1:key}: ${2:value}"
+    ],
+    "description": "Insert a YTT data values document"
+  },
+  "YTT data values schema": {
+    "prefix": "ytt-data-values-schema",
+    "body": [
+      "#@data/values-schema",
+      "---",
+      "${1:key}: ${2:\"\"}"
+    ],
+    "description": "Insert a YTT data values schema document"
+  },
+  "YTT comment": {
+    "prefix": "ytt-comment",
+    "body": [
+      "#! ${1:comment}"
+    ],
+    "description": "Insert a YTT comment"
+  }
+}

@@ -1,5 +1,6 @@
 {
-  "scopeName": "source.ytt",
+  "scopeName": "ytt.injection",
+  "injectionSelector": "L:source.yaml",
   "patterns": [
     {
       "include": "#ytt-text-template"
@@ -21,12 +22,6 @@
     },
     {
       "include": "#ytt-comments"
-    },
-    {
-      "include": "#yaml-comments"
-    },
-    {
-      "include": "source.yaml"
     }
   ],
   "repository": {
@@ -49,14 +44,6 @@
               "name": "punctuation.definition.comment.ytt"
             }
           }
-        }
-      ]
-    },
-    "yaml-comments": {
-      "patterns": [
-        {
-          "name": "comment.line.number-sign.yaml",
-          "match": "^\\s*#(?![!@]).*$"
         }
       ]
     },

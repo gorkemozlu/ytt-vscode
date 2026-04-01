@@ -2,7 +2,7 @@
   "name": "ytt-language-support",
   "displayName": "Carvel YTT Language Support",
   "description": "Language support for Carvel YTT (YAML Templating Tool)",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "GorkemOzlu",
   "author": {
     "name": "Gorkem Ozlu"
@@ -37,29 +37,98 @@
     "theme": "dark"
   },
   "contributes": {
-    "languages": [{
-      "id": "ytt",
-      "aliases": ["Carvel YTT", "ytt"],
-      "extensions": [".yaml", ".yml"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "ytt",
-      "scopeName": "source.ytt",
-      "path": "./syntaxes/ytt.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "ytt",
+        "aliases": [
+          "Carvel YTT",
+          "ytt"
+        ],
+        "extensions": [
+          ".ytt.yaml",
+          ".ytt.yml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ytt",
+        "scopeName": "source.ytt",
+        "path": "./syntaxes/ytt.tmLanguage.json"
+      },
+      {
+        "scopeName": "ytt.injection",
+        "path": "./syntaxes/ytt.injection.tmLanguage.json",
+        "injectTo": [
+          "source.yaml"
+        ]
+      }
+    ],
+    "snippets": [
+      {
+        "language": "ytt",
+        "path": "./snippets/ytt.code-snippets"
+      },
+      {
+        "language": "yaml",
+        "path": "./snippets/ytt.code-snippets"
+      }
+    ],
+    "commands": [
+      {
+        "command": "yttLanguageSupport.previewMarkers",
+        "title": "YTT: Preview Markers",
+        "category": "YTT"
+      },
+      {
+        "command": "yttLanguageSupport.validateCurrentFile",
+        "title": "YTT: Validate Current File",
+        "category": "YTT"
+      }
+    ],
+    "configuration": {
+      "title": "Carvel YTT Language Support",
+      "properties": {
+        "yttLanguageSupport.comments.warnOnPlainYamlComments": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when plain YAML comments (# ...) are used inside YTT-aware documents."
+        },
+        "yttLanguageSupport.validation.mode": {
+          "type": "string",
+          "enum": [
+            "off",
+            "manual",
+            "onSave"
+          ],
+          "default": "manual",
+          "description": "Controls when the extension runs the ytt CLI validation command."
+        },
+        "yttLanguageSupport.validation.binaryPath": {
+          "type": "string",
+          "default": "ytt",
+          "description": "Path to the ytt binary used by the validate command."
+        }
+      }
+    }
   },
   "activationEvents": [
     "onLanguage:ytt",
-    "onLanguage:yaml"
+    "onLanguage:yaml",
+    "onCommand:yttLanguageSupport.previewMarkers",
+    "onCommand:yttLanguageSupport.validateCurrentFile"
   ],
   "main": "./extension.js",
   "scripts": {
     "package": "vsce package",
-    "publish": "vsce publish"
+    "publish": "vsce publish",
+    "test": "node ./test/runTest.js"
   },
   "devDependencies": {
     "@types/vscode": "^1.96.0",
+    "@vscode/test-electron": "^2.4.1",
+    "mocha": "^11.1.0",
     "vsce": "^2.15.0"
   }
 }

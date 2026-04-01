@@ -1,65 +1,87 @@
 # Carvel YTT Language Support
 
-VSCode extension that provides language support for Carvel YTT (YAML Templating Tool) files.
+VS Code language support for [Carvel ytt](https://carvel.dev/ytt/), with a focus on safe YAML coexistence and first-class support for YTT directives, annotations, and comments.
 
-## Features
+## Highlights
 
-- Syntax highlighting for YTT directives
-- Code folding support for:
-  - YTT blocks (`#@ if/end`, `#@ for/end`, `#@ def/end`)
-  - YAML resources (starting with `apiVersion:`)
-  - YAML blocks and lists
-- Support for nested YTT directives
-- Proper indentation handling
+- Dedicated `ytt` language mode for `.ytt.yaml` and `.ytt.yml`
+- YAML injection grammar for YTT markers inside regular `.yaml` files
+- Syntax highlighting for:
+  - `#@` directives like `if`, `elif`, `else`, `for`, `def`, `load`, and `return`
+  - `#@overlay/...`, `#@data/...`, `#@schema/...`, and `#@yaml/...` annotations
+  - Inline expressions like `name: #@ data.values.name`
+  - Text templates like `(@= value @)`
+  - `#!` YTT comments
+- YTT-aware folding for control blocks, YAML documents, and nested YAML blocks
+- Quick fix to convert plain `#` comments into `#!` comments in YTT-aware files
+- Snippets for common YTT authoring patterns
+- Optional `ytt` CLI validation command
 
-## Examples
+## Comment Syntax
 
-### YTT Directive Folding
+YTT treats comment-like lines differently depending on the prefix:
+
+- `#@` executes YTT directives and annotations
+- `#!` is the recommended YTT comment syntax
+- `#` is plain YAML comment syntax and may be undesirable in templated files
+
+When a file is opened as `ytt`, the extension uses `#!` for the editor line comment action.
 
 ```yaml
+#! this is a YTT comment
+#@ load("@ytt:data", "data")
+
 #@ if data.values.enabled:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: test-config
+  name: demo
 data:
-  key1: value1
+  owner: #@ data.values.owner
+#@ else:
+#! fallback branch for disabled config
+data: {}
 #@ end
 ```
 
+## Commands
 
-### Resource-Level Folding
+- `YTT: Preview Markers`
+  Shows the YTT directives, annotations, comments, and templates detected in the active file.
+- `YTT: Validate Current File`
+  Runs `ytt -f <current-file>` and surfaces any CLI errors as diagnostics.
 
-```yaml
-apiVersion: v1  # Click the fold icon here
-kind: Service
-metadata:
-  name: test-service
-spec:
-  ports:
-  - port: 80
-    protocol: TCP
+## Settings
+
+- `yttLanguageSupport.comments.warnOnPlainYamlComments`
+  Warn when plain `# ...` comments appear in YTT-aware files.
+- `yttLanguageSupport.validation.mode`
+  `off`, `manual`, or `onSave`.
+- `yttLanguageSupport.validation.binaryPath`
+  Path to the `ytt` binary used by the validation command.
+
+## Snippets
+
+The extension contributes snippets for:
+
+- `ytt-if`
+- `ytt-if-else`
+- `ytt-for`
+- `ytt-def`
+- `ytt-load`
+- `ytt-overlay-match`
+- `ytt-data-values`
+- `ytt-data-values-schema`
+- `ytt-comment`
+
+## Development
+
+```bash
+npm install
+npm test
 ```
 
-## Requirements
+## Known Notes
 
-- VSCode 1.96.0 or higher
-
-## Installation
-
-1. Install through VS Code extensions
-2. Search for "Carvel YTT Language Support"
-3. Click Install
-
-## Known Issues
-
-Please report any issues on the GitHub repository.
-
-## Release Notes
-
-### 0.0.1
-
-Initial release:
-- Basic YTT syntax highlighting
-- Code folding support
-- YAML resource folding
+- The extension intentionally avoids taking over all `.yaml` files.
+- YTT-specific folding and diagnostics only activate for `ytt` files or YAML files that contain YTT markers.
