@@ -5,6 +5,7 @@ VS Code language support for [Carvel ytt](https://carvel.dev/ytt/), with a focus
 ## Highlights
 
 - Dedicated `ytt` language mode for `.ytt.yaml` and `.ytt.yml`
+- Automatic `ytt` language mode for YAML documents with a line starting with `#@` (optionally indented), on open and while editing
 - YAML injection grammar for YTT markers inside regular `.yaml` files
 - Syntax highlighting for:
   - `#@` directives like `if`, `elif`, `else`, `for`, `def`, `load`, and `return`

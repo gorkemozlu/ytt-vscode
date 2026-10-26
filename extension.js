@@ -3,6 +3,7 @@ const vscode = require('vscode');
 
 const YTT_MARKER =
     /(^|[ \t])#@|(^|[ \t])#!|\(@|#@(?:overlay|data\/values|schema|yaml)\//m;
+const YTT_LANGUAGE_PATTERN = /^[ \t]*#@/m;
 const YTT_COMMENT_PATTERN = /^\s*#!.*$/;
 const PLAIN_YAML_COMMENT_PATTERN = /^\s*#(?![!@]).*$/;
 const YTT_ANNOTATION_PATTERN = /^\s*#@(overlay|yaml|data|schema)(\/[\w-]+)+\b/;
@@ -488,6 +489,10 @@ async function refreshDiagnostics(document, diagnostics, options = {}) {
     if (!shouldManageDocument(document)) {
         diagnostics.delete(document.uri);
         return [];
+    }
+
+    if (document.languageId === 'yaml' && YTT_LANGUAGE_PATTERN.test(document.getText())) {
+        document = await vscode.languages.setTextDocumentLanguage(document, 'ytt');
     }
 
     const documentDiagnostics = [];

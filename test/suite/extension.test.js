@@ -4,6 +4,7 @@ const path = require('path');
 const vscode = require('vscode');
 
 const extension = require('../../extension');
+const manifest = require('../../package.json');
 const languageConfiguration = require('../../language-configuration.json');
 const snippets = JSON.parse(
     fs.readFileSync(path.resolve(__dirname, '..', '..', 'snippets', 'ytt.code-snippets'), 'utf8')
@@ -19,19 +20,92 @@ async function openFixture(name) {
     return document;
 }
 
+async function waitForLanguage(document, languageId) {
+    if (document.languageId === languageId) {
+        return document;
+    }
+
+    return new Promise((resolve, reject) => {
+        const subscription = vscode.workspace.onDidOpenTextDocument((openedDocument) => {
+            if (openedDocument.uri.toString() !== document.uri.toString()
+                || openedDocument.languageId !== languageId) {
+                return;
+            }
+
+            clearTimeout(timeout);
+            subscription.dispose();
+            resolve(openedDocument);
+        });
+        const timeout = setTimeout(() => {
+            subscription.dispose();
+            reject(new Error(`Expected ${document.uri} to use ${languageId} language mode.`));
+        }, 1500);
+    });
+}
+
 suite('Carvel YTT Language Support', () => {
+    suiteSetup(async () => {
+        await vscode.extensions.getExtension(`${manifest.publisher}.${manifest.name}`).activate();
+    });
+
     test('uses #! as the line comment token for ytt files', () => {
         assert.strictEqual(languageConfiguration.comments.lineComment, '#!');
     });
 
-    test('detects ytt markers in yaml files without claiming all yaml files', async () => {
+    test('switches yaml files with ytt directive lines to ytt without claiming all yaml files', async () => {
         const plainYaml = await openFixture('plain.yaml');
-        const mixedYaml = await openFixture('mixed.yaml');
+        const mixedYaml = await waitForLanguage(await openFixture('mixed.yaml'), 'ytt');
 
         assert.strictEqual(plainYaml.languageId, 'yaml');
-        assert.strictEqual(mixedYaml.languageId, 'yaml');
+        assert.strictEqual(mixedYaml.languageId, 'ytt');
         assert.strictEqual(extension._internal.isYttAwareDocument(plainYaml), false);
         assert.strictEqual(extension._internal.isYttAwareDocument(mixedYaml), true);
+    });
+
+    test('detects indented ytt annotations after the first line in yml files', async () => {
+        const document = await waitForLanguage(await openFixture('indented.yml'), 'ytt');
+
+        assert.strictEqual(document.languageId, 'ytt');
+    });
+
+    test('switches to ytt when a directive is added while editing yaml', async () => {
+        const document = await vscode.workspace.openTextDocument({
+            language: 'yaml',
+            content: 'kind: ConfigMap\nmetadata:\n  name: example\n'
+        });
+        const editor = await vscode.window.showTextDocument(document);
+        assert.strictEqual(document.languageId, 'yaml');
+
+        await editor.edit((edit) => {
+            edit.insert(new vscode.Position(2, 0), '  #@overlay/match missing_ok=True\n');
+        });
+
+        const detectedDocument = await waitForLanguage(document, 'ytt');
+        assert.strictEqual(detectedDocument.languageId, 'ytt');
+        assert.strictEqual(
+            detectedDocument.getText(),
+            'kind: ConfigMap\nmetadata:\n  #@overlay/match missing_ok=True\n  name: example\n'
+        );
+    });
+
+    test('keeps yaml mode when markers do not start a line', async () => {
+        const document = await vscode.workspace.openTextDocument({
+            language: 'yaml',
+            content: '#! comment\n# Mention #@ in a comment\nname: #@ data.values.name\ntext: "(@= value @)"\n'
+        });
+        await vscode.window.showTextDocument(document);
+
+        assert.strictEqual(document.languageId, 'yaml');
+    });
+
+    test('does not switch non-yaml documents containing directive lines', async () => {
+        const document = await vscode.workspace.openTextDocument({
+            language: 'plaintext',
+            content: '#@ load("@ytt:data", "data")\n'
+        });
+        await vscode.window.showTextDocument(document);
+
+        assert.strictEqual(document.languageId, 'plaintext');
     });
 
     test('keeps .ytt.yaml files in the ytt language mode', async () => {

@@ -2,10 +2,10 @@
   "name": "ytt-language-support",
   "displayName": "Carvel YTT Language Support",
   "description": "Language support for Carvel YTT (YAML Templating Tool)",
-  "version": "0.0.3",
-  "publisher": "GorkemOzlu",
+  "version": "0.0.4",
+  "publisher": "VictorWeng",
   "author": {
-    "name": "Gorkem Ozlu"
+    "name": "Victor Weng"
   },
   "license": "MIT",
   "repository": {
